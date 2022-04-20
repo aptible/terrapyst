@@ -1,11 +1,11 @@
 from pathlib import Path
 
-import pytest
+from glom import glom
 
 from terrapy import TerraformWorkspace
 from terrapy.plan import TerraformPlan
 
-from .fixtures import PROVIDER_CACHE, workspace, workspace_environment
+from .conftest import PROVIDER_CACHE
 
 
 def test_version():
@@ -23,6 +23,17 @@ def test_init(workspace_environment):
 def test_plan(workspace):
     results, plan = workspace.plan(error_function=print, output_function=print)
     assert results.successful, "Terraform plan succeeded."
+    assert glom(plan, "raw_plan.variables.test_string.value") == "yes, this is a test"
+    assert isinstance(plan, TerraformPlan), "Terraform plan returned on successfull plan."
+
+
+def test_plan_with_custom_backend_conf(workspace_environment):
+    workspace = TerraformWorkspace(workspace_environment)
+    workspace.env["TF_PLUGIN_CACHE_DIR"] = PROVIDER_CACHE
+    workspace.init(backend_config_path=Path(workspace_environment) / "mock.tfbackend")
+    results, plan = workspace.plan(error_function=print, output_function=print)
+    assert results.successful, "Terraform plan succeeded."
+    assert glom(plan, "raw_plan.variables.test_string.value") == "yes, this is a test"
     assert isinstance(plan, TerraformPlan), "Terraform plan returned on successfull plan."
 
 

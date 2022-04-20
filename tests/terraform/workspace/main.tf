@@ -12,7 +12,15 @@ terraform {
 }
 
 
+variable "test_string" {
+  default = "unset test string"
+}
 
+resource "null_resource" "first_testing_input" {
+  triggers = {
+    id = var.test_string
+  }
+}
 
 resource "random_string" "first" {
   length = 16

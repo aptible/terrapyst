@@ -4,6 +4,8 @@ import shutil
 import subprocess
 import tempfile
 from logging import getLogger
+from pathlib import Path
+from typing import Optional
 
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import TerraformRun
@@ -35,8 +37,11 @@ class TerraformWorkspace(TerraformRun):
         self.cwd = path if path != None else os.getcwd()
         self.env = {}
 
-    def init(self):
-        return self._subprocess_run([self.terraform_path, "init"], raise_exception_on_failure=True)
+    def init(self, backend_config_path: Optional[Path] = None):
+        run_command = [self.terraform_path, "init"]
+        if backend_config_path:
+            run_command.append(f"-backend-config={str(backend_config_path)}")
+        return self._subprocess_run(run_command, raise_exception_on_failure=True)
 
     def validate(self):
         return self._subprocess_run(["terraform", "validate", "-json"], raise_exception_on_failure=True)
