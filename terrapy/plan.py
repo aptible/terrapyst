@@ -1,6 +1,5 @@
 import json
 import shutil
-import subprocess
 from logging import getLogger
 
 from .exceptions import TerraformRuntimeError, TerraformVersionError

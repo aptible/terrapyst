@@ -1,8 +1,11 @@
+import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
 from glom import glom
 
 from terrapy import TerraformWorkspace
+from terrapy.mixins import TerraformRun
 from terrapy.plan import TerraformPlan
 
 from .conftest import PROVIDER_CACHE
@@ -20,21 +23,20 @@ def test_init(workspace_environment):
     assert (Path(workspace_environment) / ".terraform").is_dir(), "Workspace has initialized."
 
 
+def test_init_with_custom_backend_conf(workspace_environment):
+    with patch.object(subprocess, "run", wraps=subprocess.run) as wrapped_subprocess_call:
+        workspace = TerraformWorkspace(workspace_environment)
+        workspace.env["TF_PLUGIN_CACHE_DIR"] = PROVIDER_CACHE
+        workspace.init(backend_config_path=Path(workspace_environment) / "mock.tfbackend")
+        assert any(["-backend-config=" in arg for arg in wrapped_subprocess_call.call_args.args[0]])
+        assert (Path(workspace_environment) / ".terraform").is_dir(), "Workspace has initialized."
+
+
 def test_plan(workspace):
     results, plan = workspace.plan(error_function=print, output_function=print)
     assert results.successful, "Terraform plan succeeded."
     assert glom(plan, "raw_plan.variables.test_string.value") == "yes, this is a test"
-    assert isinstance(plan, TerraformPlan), "Terraform plan returned on successfull plan."
-
-
-def test_plan_with_custom_backend_conf(workspace_environment):
-    workspace = TerraformWorkspace(workspace_environment)
-    workspace.env["TF_PLUGIN_CACHE_DIR"] = PROVIDER_CACHE
-    workspace.init(backend_config_path=Path(workspace_environment) / "mock.tfbackend")
-    results, plan = workspace.plan(error_function=print, output_function=print)
-    assert results.successful, "Terraform plan succeeded."
-    assert glom(plan, "raw_plan.variables.test_string.value") == "yes, this is a test"
-    assert isinstance(plan, TerraformPlan), "Terraform plan returned on successfull plan."
+    assert isinstance(plan, TerraformPlan), "Terraform plan returned on successful plan."
 
 
 def test_apply_interaction(workspace):

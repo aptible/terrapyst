@@ -16,11 +16,11 @@ tests: install pytest isort_check black_check
 
 pytest:
 	. .env/bin/activate && \
-	python -m pytest
+	python -m pytest --cov=./terrapy --cov-report=term-missing tests
 
 pytest_loud:
 	. .env/bin/activate && \
-	python -m pytest -s
+	python -m pytest -s --cov=./terrapy --cov-report=term-missing tests
 
 isort_check:
 	. .env/bin/activate && \
