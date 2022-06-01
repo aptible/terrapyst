@@ -25,9 +25,11 @@ def test_init(workspace_environment):
 
 def test_init_with_custom_backend_conf(workspace_environment):
     with patch.object(subprocess, "run", wraps=subprocess.run) as wrapped_subprocess_call:
-        workspace = TerraformWorkspace(workspace_environment)
+        workspace = TerraformWorkspace(
+            workspace_environment, backend_config_path=Path(workspace_environment) / "mock.tfbackend"
+        )
         workspace.env["TF_PLUGIN_CACHE_DIR"] = PROVIDER_CACHE
-        workspace.init(backend_config_path=Path(workspace_environment) / "mock.tfbackend")
+        workspace.init()
         assert any(["-backend-config=" in arg for arg in wrapped_subprocess_call.call_args.args[0]])
         assert (Path(workspace_environment) / ".terraform").is_dir(), "Workspace has initialized."
 

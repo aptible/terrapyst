@@ -3,9 +3,10 @@ import os
 import shutil
 import subprocess
 import tempfile
+from ast import Dict
 from logging import getLogger
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import TerraformRun
@@ -15,7 +16,8 @@ logger = getLogger(__name__)
 
 
 class TerraformWorkspace(TerraformRun):
-    def __init__(self, path=None) -> None:
+    def __init__(self, path=None, backend_config_path: Optional[Path] = None) -> None:
+        self.backend_config_path = backend_config_path
         self.terraform_path = shutil.which("terraform")
         if not self.terraform_path:
             raise TerraformError("Terraform binary is missing from system.")
@@ -34,14 +36,17 @@ class TerraformWorkspace(TerraformRun):
         self.platform = version_data["platform"]
         self.provider_selections = version_data["provider_selections"]
 
-        self.cwd = path if path != None else os.getcwd()
+        self.cwd = path if path != None else Path(os.getcwd())
         self.env = {}
 
-    def init(self, backend_config_path: Optional[Path] = None):
+    def init(self):
         run_command = [self.terraform_path, "init"]
-        if backend_config_path:
-            run_command.append(f"-backend-config={str(backend_config_path)}")
+        if self.backend_config_path:
+            run_command.append(f"-backend-config={str(self.backend_config_path)}")
         return self._subprocess_run(run_command, raise_exception_on_failure=True)
+
+    def set_backend_conf(self, options: Dict[str, Any]):
+        pass
 
     def validate(self):
         return self._subprocess_run(["terraform", "validate", "-json"], raise_exception_on_failure=True)
