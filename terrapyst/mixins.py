@@ -32,7 +32,11 @@ class TerraformRun:
         ret_results = ProcessResults(results.returncode, results.stdout, results.stderr)
 
         if raise_exception_on_failure and not ret_results.successful:
-            raise TerraformRuntimeError(f"An error occurred while running command '{' '.join(args)}'", ret_results)
+            error_message = f"An error occurred while running command '{' '.join(args)}'\n"
+            error_message += f"returncode: {ret_results.returncode}\n"
+            error_message += f"stdout: {ret_results.stdout}\n"
+            error_message += f"stderr: {ret_results.stderr}\n"
+            raise TerraformRuntimeError(error_message)
 
         return ret_results
 
