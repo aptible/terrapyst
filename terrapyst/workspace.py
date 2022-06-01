@@ -3,10 +3,9 @@ import os
 import shutil
 import subprocess
 import tempfile
-from ast import Dict
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import TerraformRun
@@ -44,9 +43,6 @@ class TerraformWorkspace(TerraformRun):
         if self.backend_config_path:
             run_command.append(f"-backend-config={str(self.backend_config_path)}")
         return self._subprocess_run(run_command, raise_exception_on_failure=True)
-
-    def set_backend_conf(self, options: Dict[str, Any]):
-        pass
 
     def validate(self):
         return self._subprocess_run(["terraform", "validate", "-json"], raise_exception_on_failure=True)
