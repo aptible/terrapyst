@@ -36,7 +36,7 @@ class TerraformRun:
             error_message += f"returncode: {ret_results.returncode}\n"
             error_message += f"stdout: {ret_results.stdout}\n"
             error_message += f"stderr: {ret_results.stderr}\n"
-            raise TerraformRuntimeError(error_message)
+            raise TerraformRuntimeError(error_message, ret_results)
 
         return ret_results
 
