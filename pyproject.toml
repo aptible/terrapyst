@@ -1,6 +1,6 @@
 [tool.isort]
 profile = "black"
-skip = [".env"]
+skip = [".venv"]
 src_paths = ["terrapyst", "tests"]
 
 [tool.black]
