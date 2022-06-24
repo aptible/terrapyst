@@ -2,7 +2,7 @@ SHELL := /bin/bash
 PYTHON := . .venv/bin/activate && python
 
 .venv:
-	python -m venv .env
+	python -m venv .venv
 
 install: .venv
 	$(PYTHON) -m pip install -e .[dev]
