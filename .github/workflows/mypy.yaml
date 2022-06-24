@@ -1,0 +1,24 @@
+name: Mypy testing
+
+on:
+  push:
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.APTIBLE_ROBOT_PRIVATE_SSH_KEY }}
+
+      - name: Install Dependencies
+        run: make install
+
+      - name: Test Formatting
+        run: make mypy_check

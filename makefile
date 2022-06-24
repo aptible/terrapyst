@@ -1,31 +1,30 @@
 SHELL := /bin/bash
+PYTHON := . .venv/bin/activate && python
 
-.env:
+.venv:
 	python -m venv .env
 
-install: .env
-	source .env/bin/activate && python -m pip install -e .[dev]
+install: .venv
+	$(PYTHON) -m pip install -e .[dev]
 
 pretty:
-	. .env/bin/activate && \
-	python -m black . && \
+	$(PYTHON) -m black . && \
 	isort .
 
 .PHONY: tests
-tests: install pytest isort_check black_check
+tests: install pytest isort_check black_check mypy_check
 
 pytest:
-	. .env/bin/activate && \
-	python -m pytest --cov=./terrapyst --cov-report=term-missing tests
+	$(PYTHON) -m pytest --cov=./terrapyst --cov-report=term-missing tests
 
 pytest_loud:
-	. .env/bin/activate && \
-	python -m pytest -s --cov=./terrapyst --cov-report=term-missing tests
+	$(PYTHON) -m pytest -s --cov=./terrapyst --cov-report=term-missing tests
 
 isort_check:
-	. .env/bin/activate && \
-	python -m isort --check-only .
+	$(PYTHON) -m isort --check-only .
 
 black_check:
-	. .env/bin/activate && \
-	python -m black . --check
+	$(PYTHON) -m black . --check
+
+mypy_check:
+	$(PYTHON) -m mypy abf
