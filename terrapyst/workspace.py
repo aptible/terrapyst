@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
 
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import TerraformRun
@@ -15,6 +15,8 @@ logger = getLogger(__name__)
 
 
 class TerraformWorkspace(TerraformRun):
+    env: Dict[str, str]
+
     def __init__(self, path=None, backend_config_path: Optional[Path] = None) -> None:
         self.backend_config_path = backend_config_path
         self.terraform_path = shutil.which("terraform")

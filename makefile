@@ -27,4 +27,4 @@ black_check:
 	$(PYTHON) -m black . --check
 
 mypy_check:
-	$(PYTHON) -m mypy abf
+	$(PYTHON) -m mypy terrapyst

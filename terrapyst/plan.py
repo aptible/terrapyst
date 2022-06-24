@@ -1,6 +1,7 @@
 import json
 import shutil
 from logging import getLogger
+from typing import Any, Dict
 
 from .exceptions import TerraformRuntimeError, TerraformVersionError
 from .mixins import TerraformRun
@@ -13,6 +14,9 @@ CREATE_ACTIONS = ["create"]
 
 
 class TerraformPlan(TerraformRun):
+    changes: Dict[str, Any]
+    env: Dict[str, str]
+
     def __init__(self, cwd, plan_path) -> None:
         # confirm file exists
 
