@@ -1,6 +1,7 @@
 import os
 import subprocess
 from logging import getLogger
+from typing import Dict
 
 from .exceptions import TerraformRuntimeError
 
@@ -15,7 +16,7 @@ class ProcessResults:
         self.successful = returncode == 0
         self.stdout = stdout
         self.stderr = stderr
-        self.env: dict[str, any] = {}
+        self.env: Dict[str, any] = {}
 
 
 class TerraformRun:
