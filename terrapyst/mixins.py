@@ -15,6 +15,7 @@ class ProcessResults:
         self.successful = returncode == 0
         self.stdout = stdout
         self.stderr = stderr
+        self.env = {}
 
 
 class TerraformRun:
@@ -24,7 +25,7 @@ class TerraformRun:
             "capture_output": True,
             "encoding": "utf-8",
             "timeout": None,
-            "env": {**os.environ, **DEFAULT_ENV_VARS},
+            "env": {**os.environ, **DEFAULT_ENV_VARS, **self.env},
         }
         pass_kwargs = {**default_kwargs, **kwargs}
         results = subprocess.run(args, **pass_kwargs)
@@ -47,7 +48,7 @@ class TerraformRun:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=self.cwd,
-            env={**os.environ, **DEFAULT_ENV_VARS},
+            env={**os.environ, **DEFAULT_ENV_VARS, **self.env},
             universal_newlines=True,
             encoding="utf-8",
             bufsize=1,
