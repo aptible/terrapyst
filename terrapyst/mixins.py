@@ -15,7 +15,7 @@ class ProcessResults:
         self.successful = returncode == 0
         self.stdout = stdout
         self.stderr = stderr
-        self.env = {}
+        self.env: dict[str, any] = {}
 
 
 class TerraformRun:
