@@ -10,7 +10,7 @@ RESOURCE_TYPES = ["apply_start", "apply_progress", "apply_complete", "planned_ch
 RESOURCE_STATUSES = {
     "planned_change": "planned",
     "apply_start": "starting",
-    "apply_progress": "progress",
+    "apply_progress": "in_progress",
     "apply_complete": "finished",
 }
 
