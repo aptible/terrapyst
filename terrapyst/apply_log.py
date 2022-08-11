@@ -16,9 +16,9 @@ RESOURCE_STATUSES = {
 
 
 class ApplyLog:
-    def __init__(self) -> None:
-        self.types = set([])
-        self.resources = {}
+
+    types = set([])
+    resources = {}
 
     def add_lines(self, log_lines: str):
         for log_line in log_lines.split("\n"):
