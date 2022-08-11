@@ -42,10 +42,20 @@ def test_plan(workspace):
 
 
 def test_apply_interaction(workspace):
-    results = workspace.apply(error_function=print, output_function=print)
+    results, apply_log = workspace.apply(error_function=print, output_function=print)
     assert results.returncode == 1, "Terraform apply failed when interaction is required."
 
 
 def test_apply_auto_approve(workspace):
-    results = workspace.apply(auto_approve=True, error_function=print, output_function=print)
+    results, apply_log = workspace.apply(auto_approve=True, error_function=print, output_function=print)
+    assert results.returncode == 0, "Terraform apply succeeded."
+
+
+def test_destroy_interaction(workspace):
+    results, apply_log = workspace.destroy(error_function=print, output_function=print)
+    assert results.returncode == 1, "Terraform apply failed when interaction is required."
+
+
+def test_destroy_auto_approve(workspace):
+    results, apply_log = workspace.destroy(auto_approve=True, error_function=print, output_function=print)
     assert results.returncode == 0, "Terraform apply succeeded."

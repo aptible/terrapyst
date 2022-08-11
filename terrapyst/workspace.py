@@ -7,6 +7,8 @@ from logging import getLogger
 from pathlib import Path
 from typing import Dict, Optional
 
+from terrapyst.apply_log import ApplyLog
+
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import TerraformRun
 from .plan import TerraformPlan
@@ -101,20 +103,32 @@ class TerraformWorkspace(TerraformRun):
         if auto_approve:
             command.append("-auto-approve")
 
-        return self._subprocess_stream(
+        results = self._subprocess_stream(
             command,
             error_function=error_function,
             output_function=output_function,
         )
 
+        apply_log = ApplyLog()
+        apply_log.add_lines(results.stdout)
+
+        return results, apply_log
+
     def destroy(self, auto_approve=False, error_function=None, output_function=None):
-        if not auto_approve:
-            return self.plan(error_function=error_function, output_function=output_function, destroy=True)
-        return self._subprocess_stream(
-            [self.terraform_path, "destroy", "-json", "-auto-approve"],
+        terraform_command = [self.terraform_path, "destroy", "-json"]
+        if auto_approve:
+            terraform_command.append("-auto-approve")
+
+        results = self._subprocess_stream(
+            terraform_command,
             error_function=error_function,
             output_function=output_function,
         )
+
+        apply_log = ApplyLog()
+        apply_log.add_lines(results.stdout)
+
+        return results, apply_log
 
     def output(self):
         return self._subprocess_run([self.terraform_path, "output", "-json"])
