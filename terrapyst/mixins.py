@@ -1,7 +1,7 @@
 import os
 import subprocess
 from logging import getLogger
-from typing import Any, Dict
+from typing import IO, Any, Dict, cast
 
 from .exceptions import TerraformRuntimeError
 
@@ -64,14 +64,14 @@ class TerraformRun:
             had_output = False
 
             # Check for stdout changes.
-            for output in process.stdout:  # type: ignore
+            for output in cast(IO, process.stdout):
                 stdout += output
                 logger.info(output)
                 if output_function:
                     output_function(output)
 
             # Check for stderr changes.
-            for output in process.stderr:  # type: ignore
+            for output in cast(IO, process.stderr):
                 had_output = True
                 stderr += output
                 logger.warning(output)
