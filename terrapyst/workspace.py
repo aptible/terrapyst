@@ -5,12 +5,12 @@ import subprocess
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional, Tuple, Union
 
 from terrapyst.apply_log import ApplyLog
 
 from .exceptions import TerraformError, TerraformRuntimeError
-from .mixins import TerraformRun
+from .mixins import ProcessResults, TerraformRun
 from .plan import TerraformPlan
 
 logger = getLogger(__name__)
@@ -42,16 +42,18 @@ class TerraformWorkspace(TerraformRun):
         self.cwd = path if path != None else Path(os.getcwd())
         self.env = {}
 
-    def init(self):
+    def init(self) -> ProcessResults:
         run_command = [self.terraform_path, "init"]
         if self.backend_config_path:
             run_command.append(f"-backend-config={str(self.backend_config_path)}")
         return self._subprocess_run(run_command, raise_exception_on_failure=True)
 
-    def validate(self):
+    def validate(self) -> ProcessResults:
         return self._subprocess_run(["terraform", "validate", "-json"], raise_exception_on_failure=True)
 
-    def plan(self, error_function=None, output_function=None, output_path=None, destroy=False):
+    def plan(
+        self, error_function=None, output_function=None, output_path=None, destroy=False
+    ) -> Tuple[ProcessResults, Union[TerraformPlan, None]]:
         save_plan = True
         if not output_path:
             save_plan = False
@@ -90,11 +92,11 @@ class TerraformWorkspace(TerraformRun):
 
     def apply(
         self,
-        error_function=None,
-        output_function=None,
-        auto_approve=False,
-        plan_file=None,
-    ):
+        error_function: Callable = None,
+        output_function: Callable = None,
+        auto_approve: bool = False,
+        plan_file: str = None,
+    ) -> Tuple[ProcessResults, ApplyLog]:
 
         command = [self.terraform_path, "apply", "-json"]
 
@@ -114,7 +116,9 @@ class TerraformWorkspace(TerraformRun):
 
         return results, apply_log
 
-    def destroy(self, auto_approve=False, error_function=None, output_function=None):
+    def destroy(
+        self, auto_approve: bool = False, error_function: Callable = None, output_function: Callable = None
+    ) -> Tuple[ProcessResults, ApplyLog]:
         terraform_command = [self.terraform_path, "destroy", "-json"]
         if auto_approve:
             terraform_command.append("-auto-approve")
@@ -130,10 +134,10 @@ class TerraformWorkspace(TerraformRun):
 
         return results, apply_log
 
-    def output(self):
+    def output(self) -> ProcessResults:
         return self._subprocess_run([self.terraform_path, "output", "-json"])
 
-    def get(self, update=False):
+    def get(self, update: bool = False) -> ProcessResults:
         command = [self.terraform_path, "get"]
         if update:
             command.append("-update")

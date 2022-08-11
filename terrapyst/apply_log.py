@@ -17,19 +17,17 @@ RESOURCE_STATUSES = {
 
 class ApplyLog:
 
-    types = set([])
-    resources = {}
+    resources: Dict[str, Any] = {}
 
-    def add_lines(self, log_lines: str):
+    def add_lines(self, log_lines: str) -> None:
         for log_line in log_lines.split("\n"):
             if len(log_line) < 1:
                 continue
             self.add_line(log_line)
 
-    def add_line(self, log_line: str):
+    def add_line(self, log_line: str) -> None:
 
         log = json.loads(log_line)
-        self.types.add(log["type"])
 
         # apply_start: {"@level":"info","@message":"module.vpc.module.nat_gateway[0].aws_route.route_to_nat[1]: Destroying... [id=r-rtb-06df695578f26432f1080289494]","@module":"terraform.ui","@timestamp":"2022-08-11T10:17:40.692416-05:00","hook":{"resource":{"addr":"module.vpc.module.nat_gateway[0].aws_route.route_to_nat[1]","module":"module.vpc.module.nat_gateway[0]","resource":"aws_route.route_to_nat[1]","implied_provider":"aws","resource_type":"aws_route","resource_name":"route_to_nat","resource_key":1},"action":"delete","id_key":"id","id_value":"r-rtb-06df695578f26432f1080289494"},"type":"apply_start"}
         # apply_progress: {"@level":"info","@message":"module.vpc.aws_internet_gateway_attachment.main: Still destroying... [10s elapsed]","@module":"terraform.ui","@timestamp":"2022-08-11T10:17:50.696783-05:00","hook":{"resource":{"addr":"module.vpc.aws_internet_gateway_attachment.main","module":"module.vpc","resource":"aws_internet_gateway_attachment.main","implied_provider":"aws","resource_type":"aws_internet_gateway_attachment","resource_name":"main","resource_key":null},"action":"delete","elapsed_seconds":10},"type":"apply_progress"}
@@ -63,7 +61,7 @@ class ApplyLog:
             return_outputs[key] = {"sensitive": output_object["sensitive"], **output_object["value"]}
         return outputs
 
-    def process_resource(self, resource_log):
+    def process_resource(self, resource_log) -> None:
         if resource_log["type"] not in RESOURCE_TYPES:
             raise ValueError(f"Unexpected log type passed: {resource_log['type']}")
 

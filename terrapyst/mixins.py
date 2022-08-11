@@ -20,7 +20,10 @@ class ProcessResults:
 
 
 class TerraformRun:
-    def _subprocess_run(self, args, raise_exception_on_failure=False, **kwargs):
+    cwd: str = os.getcwd()
+    env: Dict[str, str] = {}
+
+    def _subprocess_run(self, args, raise_exception_on_failure=False, **kwargs) -> ProcessResults:
         default_kwargs = {
             "cwd": self.cwd,
             "capture_output": True,
@@ -29,7 +32,7 @@ class TerraformRun:
             "env": {**os.environ, **DEFAULT_ENV_VARS, **self.env},
         }
         pass_kwargs = {**default_kwargs, **kwargs}
-        results = subprocess.run(args, **pass_kwargs)
+        results = subprocess.run(args, **pass_kwargs)  # type: ignore
 
         ret_results = ProcessResults(results.returncode, results.stdout, results.stderr)
 
@@ -42,7 +45,7 @@ class TerraformRun:
 
         return ret_results
 
-    def _subprocess_stream(self, command, error_function=None, output_function=None, **kwargs):
+    def _subprocess_stream(self, command, error_function=None, output_function=None, **kwargs) -> ProcessResults:
         logger.info(f"Running command '{command}'")
         process = subprocess.Popen(
             command,
@@ -61,14 +64,14 @@ class TerraformRun:
             had_output = False
 
             # Check for stdout changes.
-            for output in process.stdout:
+            for output in process.stdout:  # type: ignore
                 stdout += output
                 logger.info(output)
                 if output_function:
                     output_function(output)
 
             # Check for stderr changes.
-            for output in process.stderr:
+            for output in process.stderr:  # type: ignore
                 had_output = True
                 stderr += output
                 logger.warning(output)
