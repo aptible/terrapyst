@@ -15,7 +15,7 @@ RESOURCE_STATUSES = {
 }
 
 
-class ApplyLog:
+class TerraformApplyLog:
 
     resources: Dict[str, Any] = {}
 

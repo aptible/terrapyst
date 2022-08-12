@@ -7,7 +7,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Callable, Dict, Optional, Tuple, Union
 
-from terrapyst.apply_log import ApplyLog
+from terrapyst.apply_log import TerraformApplyLog
 
 from .exceptions import TerraformError, TerraformRuntimeError
 from .mixins import ProcessResults, TerraformRun
@@ -96,7 +96,7 @@ class TerraformWorkspace(TerraformRun):
         output_function: Callable = None,
         auto_approve: bool = False,
         plan_file: str = None,
-    ) -> Tuple[ProcessResults, ApplyLog]:
+    ) -> Tuple[ProcessResults, TerraformApplyLog]:
 
         command = [self.terraform_path, "apply", "-json"]
 
@@ -111,14 +111,14 @@ class TerraformWorkspace(TerraformRun):
             output_function=output_function,
         )
 
-        apply_log = ApplyLog()
+        apply_log = TerraformApplyLog()
         apply_log.add_lines(results.stdout)
 
         return results, apply_log
 
     def destroy(
         self, auto_approve: bool = False, error_function: Callable = None, output_function: Callable = None
-    ) -> Tuple[ProcessResults, ApplyLog]:
+    ) -> Tuple[ProcessResults, TerraformApplyLog]:
         terraform_command = [self.terraform_path, "destroy", "-json"]
         if auto_approve:
             terraform_command.append("-auto-approve")
@@ -129,7 +129,7 @@ class TerraformWorkspace(TerraformRun):
             output_function=output_function,
         )
 
-        apply_log = ApplyLog()
+        apply_log = TerraformApplyLog()
         apply_log.add_lines(results.stdout)
 
         return results, apply_log
