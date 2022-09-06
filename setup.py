@@ -4,5 +4,6 @@
 # Other configuration, such as for linters, is in pyproject.toml.
 
 import setuptools
+import versioneer
 
 setuptools.setup()

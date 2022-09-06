@@ -28,3 +28,6 @@ black_check:
 
 mypy_check:
 	$(PYTHON) -m mypy terrapyst
+
+build: .venv
+	$(PYTHON) -m build
