@@ -11,11 +11,7 @@ jobs:
 
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
-
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.APTIBLE_ROBOT_PRIVATE_SSH_KEY }}
+          python-version: "3.x"
 
       - name: Install Dependencies
         run: make install
