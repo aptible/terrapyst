@@ -22,6 +22,7 @@ class TerraformPlan(TerraformRun):
 
         self.cwd = cwd
         self.env = {}
+        self.plan_path = plan_path
 
         terraform_path = shutil.which("terraform")
         command = [terraform_path, "show", "-json", plan_path]
