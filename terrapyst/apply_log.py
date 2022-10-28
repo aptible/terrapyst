@@ -31,8 +31,13 @@ class TerraformApplyLog:
             self.add_line(log_line)
 
     def add_line(self, log_line: str) -> None:
-
-        log = json.loads(log_line)
+        log: Dict[str, Any]
+        try:
+            log = json.loads(log_line)
+        except json.decoder.JSONDecodeError:
+            # TODO - we should try to decode this in some other way
+            logger.warning(f"Apply log includes line of invalid json")
+            return
 
         if log["type"].startswith("refresh_"):
             return

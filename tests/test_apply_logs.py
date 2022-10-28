@@ -21,6 +21,13 @@ def test_read_log():
     assert "vpc" in apply_log.outputs
 
 
+def test_read_log_unreadable(caplog):
+    apply_log = TerraformApplyLog()
+    apply_log.add_lines("THIS WILL BE EMPTY\n")
+    assert apply_log.outputs == {}
+    assert "Apply log includes line of invalid json" in caplog.text
+
+
 def test_warning(caplog):
     apply_log = TerraformApplyLog()
     apply_log.add_lines(APPLY_LOG_CONTENTS)
